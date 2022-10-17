@@ -21,6 +21,16 @@ func BasicErrorHandler() echo.HTTPErrorHandler {
 	}
 }
 
+func JsonErrorHandler() echo.HTTPErrorHandler {
+	return func(c echo.Context, err error) {
+		if err, ok := err.(*echo.HTTPError); ok {
+			c.JSON(err.Code, echo.Map{"status": err.Message, "code": err.Code})
+			return
+		}
+		c.NoContent(http.StatusInternalServerError)
+	}
+}
+
 func CorsAny() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
