@@ -78,3 +78,21 @@ func EnvPortOr(port string) (string, bool) {
 	}
 	return ":" + envPort, true
 }
+
+// 5 is a good level
+//
+// file extentions to compress ".js", ".css"
+func GzipMiddleware(level int, types ...string) echo.MiddlewareFunc {
+	return middleware.GzipWithConfig(middleware.GzipConfig{
+		Level: level,
+		Skipper: func(c echo.Context) bool {
+			var found = false
+			for _, ext := range types {
+				if strings.HasSuffix(c.Request().URL.Path, ext) {
+					found = true
+				}
+			}
+			return !found
+		},
+	})
+}
