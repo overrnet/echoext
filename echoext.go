@@ -96,3 +96,17 @@ func GzipMiddleware(level int, types ...string) echo.MiddlewareFunc {
 		},
 	})
 }
+
+func PrefixRemove(prefix string, redirToTralingSlah bool) echo.MiddlewareFunc {
+	prefix = strings.Trim(prefix, "/")
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if redirToTralingSlah && c.Request().URL.Path == "/"+prefix {
+				return c.Redirect(http.StatusMovedPermanently, "/"+prefix+"/")
+			}
+			c.Request().URL.Path = strings.Replace(c.Request().URL.Path, "/"+prefix, "/", 1)
+			c.Request().URL.Path = strings.Replace(c.Request().URL.Path, "//", "/", 1)
+			return next(c)
+		}
+	}
+}
