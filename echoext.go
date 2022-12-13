@@ -35,6 +35,7 @@ func CorsAny() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set(echo.HeaderAccessControlAllowOrigin, "*")
+			c.Response().Header().Set("Access-Control-Allow-Headers", "*")
 			return next(c)
 		}
 	}
